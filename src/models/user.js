@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      lowerCase: true,
+      lowercase: true,
       trim: true,
     },
     email: {
@@ -48,11 +48,11 @@ const userSchema = new mongoose.Schema(
     skills: {
       type: [String],
       default: [],
-      validate(value){
-        if(value.length > 10){
+      validate(value) {
+        if (value.length > 10) {
           throw new Error("You can add only 10 skills");
         }
-      }
+      },
     },
   },
   {

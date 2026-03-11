@@ -10,10 +10,12 @@ app.use(cookieParser());
 const authRouter = require("./routes/authRoutes");
 const requestRouter = require("./routes/requestRoutes");
 const profileRouter = require("./routes/profileRoutes");
+const userRouter = require("./routes/userRouter");
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
+app.use("/", userRouter);
 
 connectDb()
   .then(() => {

@@ -18,9 +18,9 @@ authRouter.post("/signup", async (req, res) => {
       password: hashPassword,
     });
     await user.save();
-    res.status(201).send("user data saved");
+    return res.status(201).send("user data saved");
   } catch (error) {
-    res.status(400).send(error);
+    return res.status(400).send(error.message || "Signup failed");
   }
 });
 
@@ -44,15 +44,15 @@ authRouter.post("/login", async (req, res) => {
       httpOnly: true,
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
-    res.status(200).send("login successful");
+    return res.status(200).send("login successful");
   } catch (error) {
-    res.status(400).send(error);
+    return res.status(400).send(error.message || "Login failed");
   }
 });
 
 authRouter.post("/logout", (req, res) => {
   res.clearCookie("token");
-  res.status(200).send("logout successful");
+  return res.status(200).send("logout successful");
 });
 
 module.exports = authRouter;
