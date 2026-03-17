@@ -29,11 +29,15 @@ authRouter.post("/login", async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
-      throw new Error("Invalid credentials");
+      return res
+        .status(401)
+        .json({ message: "Invalid email or password" });
     }
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
-      return res.status(401).send("Invalid credentials");
+      return res
+        .status(401)
+        .json({ message: "Invalid email or password" });
     }
     // create a JWT token
     const token = await jwt.sign({ userId: user._id }, "deva", {
@@ -46,7 +50,9 @@ authRouter.post("/login", async (req, res) => {
     });
     return res.status(200).send(user);
   } catch (error) {
-    return res.status(400).send(error.message || "Login failed");
+    return res
+      .status(500)
+      .json({ message: error.message || "Login failed" });
   }
 });
 
