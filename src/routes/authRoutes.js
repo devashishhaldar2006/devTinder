@@ -17,8 +17,18 @@ authRouter.post("/signup", async (req, res) => {
       email,
       password: hashPassword,
     });
-    await user.save();
-    return res.status(201).send("user data saved");
+    const savedUser = await user.save();
+    const token = await jwt.sign({ userId: savedUser._id }, "deva", {
+      expiresIn: "7d",
+    });
+    res.cookie("token", token, {
+      httpOnly: true,
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    }); 
+    res.json({
+      message: "User registered successfully",
+      data: savedUser,
+    });
   } catch (error) {
     return res.status(400).send(error.message || "Signup failed");
   }
@@ -29,15 +39,11 @@ authRouter.post("/login", async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
-      return res
-        .status(401)
-        .json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
-      return res
-        .status(401)
-        .json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
     // create a JWT token
     const token = await jwt.sign({ userId: user._id }, "deva", {
@@ -50,9 +56,7 @@ authRouter.post("/login", async (req, res) => {
     });
     return res.status(200).send(user);
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: error.message || "Login failed" });
+    return res.status(500).json({ message: error.message || "Login failed" });
   }
 });
 
